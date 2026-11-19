@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+ <meta name="theme-color" content="#f3f0e9"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Le Purple">
+ <meta name="description" content="Rouge, noir ou Purple. Le jeu de cartes pour 2 à 12 amis, autour d’un téléphone ou dans un salon en ligne. À 3 points, passez la main.">
+ <title>Le Purple — Le jeu de cartes entre amis</title>
+ <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="apple-touch-icon" href="/icon-192.png"><link rel="manifest" href="/manifest.webmanifest"><link rel="stylesheet" href="/style.css">
+</head>
+<body data-screen="setup">
+ <div class="app-shell">
+  <header class="site-header">
+   <div class="header-brand-row"><a href="/" class="brand" aria-label="Le Purple, accueil"><span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 40 44" fill="none"><rect x="5" y="4" width="24" height="33" rx="4" stroke="currentColor" stroke-width="2"/><rect x="12" y="10" width="24" height="33" rx="4" fill="currentColor"/><path d="M21 32V20h4a3 3 0 0 1 0 6h-4" stroke="var(--paper)" stroke-width="2.2" stroke-linecap="round"/></svg></span><span>le purple<span class="brand-dot">.</span></span></a><button id="friends-toggle" class="quiet-button friends-toggle" type="button" data-social-open data-social-label="Amis">Amis</button></div>
+   <nav aria-label="Options du jeu"><button class="quiet-button" data-help="rules" type="button">Comment jouer</button><button id="sound-toggle" class="quiet-button sound-button" type="button" aria-pressed="false" aria-label="Activer les sons"></button><button class="quiet-button install-button" data-help="install" type="button" aria-label="Installer l’application">Installer <span aria-hidden="true">↗</span></button><button id="account-toggle" class="account-toggle" type="button">Mon compte</button></nav>
+  </header>
+  <main id="app">
+   <div class="setup-layout">
+    <section class="welcome">
+     <div class="eyebrow">LE JEU DE CARTES ENTRE AMIS</div>
+     <h1>Rouge. Noir.<br><em>Purple.</em></h1>
+     <p class="welcome-copy">Devinez la couleur.<br>À 3 points, passez la main.</p>
+     <div id="hero-cards" class="hero-cards" aria-hidden="true"></div>
+     <div class="hero-caption">Une rouge + une noire. C’est Purple.</div>
+     <div class="welcome-meta"><span>2–12 joueurs</span><span>52 cartes</span></div>
+    </section>
+    <section class="setup-panel" aria-labelledby="setup-title">
+     <div class="panel-heading"><h2 id="setup-title">Nouvelle partie</h2><p>Installez-vous. On s’occupe des cartes.</p></div>
+     <button id="resume" class="resume-button" type="button" hidden>↻ Reprendre la partie en cours <span>→</span></button>
+     <div class="mode-tabs" role="tablist" aria-label="Mode de jeu">
+      <button id="tab-local" role="tab" aria-selected="true" aria-controls="local-fields" data-mode="local"><span><strong>Un téléphone</strong><small>À faire passer</small></span></button>
+      <button id="tab-online" role="tab" aria-selected="false" aria-controls="online-fields" data-mode="online" tabindex="-1"><span><strong>En ligne</strong><small>Un code à partager</small></span></button>
+     </div>
+     <form id="setup-form">
+      <div id="local-fields" role="tabpanel" aria-labelledby="tab-local">
+       <div class="field-label"><span>Les joueurs</span><span id="player-count">2/12</span></div>
+       <div id="player-inputs">
+        <div class="player-input-row"><span class="player-number">01</span><input name="player" aria-label="Prénom du joueur 1" placeholder="Joueur 1" maxlength="24" autocomplete="off"><button type="button" class="icon-button remove-player" aria-label="Retirer le joueur 1" disabled>×</button></div>
+        <div class="player-input-row"><span class="player-number">02</span><input name="player" aria-label="Prénom du joueur 2" placeholder="Joueur 2" maxlength="24" autocomplete="off"><button type="button" class="icon-button remove-player" aria-label="Retirer le joueur 2" disabled>×</button></div>
+       </div>
+       <button id="add-player" type="button" class="add-player">＋ Ajouter un joueur</button>
+      </div>
+      <div id="online-fields" role="tabpanel" aria-labelledby="tab-online" hidden>
+       <div class="online-tabs" role="tablist" aria-label="Salon"><button type="button" role="tab" aria-selected="true" data-online="create">Créer un salon</button><button type="button" role="tab" aria-selected="false" data-online="join" tabindex="-1">Rejoindre un salon</button></div>
+       <label class="field-label" for="host-name">Ton prénom</label><input class="text-input" id="host-name" maxlength="24" placeholder="Comment t’appelles-tu ?" autocomplete="given-name">
+       <div id="code-field" hidden><label class="field-label" for="room-code">Le code à 6 caractères</label><input class="text-input code-input" id="room-code" maxlength="6" placeholder="ABC234" autocapitalize="characters" autocomplete="off" spellcheck="false"></div>
+      </div>
+      <details id="penalty-setup" class="penalty-setup" open><summary><span>Les défis</span><span class="challenge-meta"><span id="challenge-count">3 choisis</span><span class="chevron">⌄</span></span></summary>
+       <div class="challenge-editor"><div class="challenge-mode" role="group" aria-label="Choix des défis"><button type="button" data-penalty-mode="custom" aria-pressed="true">Je choisis</button><button type="button" data-penalty-mode="random" aria-pressed="false">Au hasard</button></div>
+        <div id="custom-challenges"><p class="field-hint">Choisis jusqu’à 8 défis. Tu peux aussi inventer les tiens.</p><div id="penalty-list" class="penalty-list"></div><label class="sr-only" for="penalty-draft">Ajouter un défi</label><div class="penalty-input"><input id="penalty-draft" placeholder="Inventez votre défi…" maxlength="120"><button id="add-penalty" type="button" class="icon-button add-action" aria-label="Ajouter le défi">＋</button></div><p class="suggestion-label">Idées à ajouter</p><div id="suggestions" class="suggestions"></div><div class="alcohol-suggestion"><span>Pour ceux qui le souhaitent</span><button type="button" data-suggestion="Boire une gorgée d’alcool">+ Une gorgée d’alcool</button></div></div>
+        <div id="random-challenges" hidden><p class="field-hint">Un défi différent est tiré du catalogue à chaque erreur, jusqu’à avoir parcouru toute la sélection. Purple raté : deux défis.</p><label class="random-alcohol"><input id="random-alcohol" type="checkbox"> Ajouter « une gorgée d’alcool » au tirage</label><p class="field-hint">L’alcool est facultatif et désactivé par défaut.</p></div>
+       </div>
+      </details>
+      <p id="setup-error" class="error-message" role="alert" hidden></p>
+      <button id="start-button" class="primary-button start-button" type="submit">Jouer <span aria-hidden="true">→</span></button>
+      <p id="setup-note" class="setup-footnote">Les prénoms et défis restent sur cet appareil.</p>
+     </form>
+     <div class="mini-rules" aria-label="Les points en un coup d’œil"><span><b class="text-red">♥</b> Rouge <strong>+1</strong></span><span><b>♠</b> Noir <strong>+1</strong></span><span><b class="text-purple purple-symbol">P</b> Purple <strong>+2</strong></span></div>
+     <p class="goal-note">3 points à la suite, et tu passes la main.</p>
+    </section>
+   </div>
+   <footer class="home-footer"><span>Le Purple · Le jeu de cartes entre amis</span><a href="/confidentialite.html" target="_blank" rel="noopener">Confidentialité</a></footer>
+  </main>
+  <div id="connection" class="connection-banner" role="status" hidden></div><div id="toast" class="toast" role="status" hidden></div>
+ </div>
+ <dialog id="help" class="help-dialog" aria-labelledby="help-title"><button class="close-dialog" aria-label="Fermer">×</button><h2 id="help-title"></h2><div id="help-content"></div></dialog>
+ <dialog id="account-dialog" class="help-dialog account-dialog" aria-labelledby="account-title"><button class="close-dialog" id="account-close" aria-label="Fermer">×</button><div class="eyebrow">LE PURPLE</div><h2 id="account-title">Bienvenue.</h2><p id="account-intro" class="account-intro">Connecte-toi pour retrouver ton prénom, tes amis et tes invitations.</p><div id="account-content"></div></dialog>
+ <dialog id="social-dialog" class="help-dialog social-dialog" aria-labelledby="social-title"><button class="close-dialog" type="button" aria-label="Fermer les amis">×</button><div class="eyebrow">LE PURPLE · TON COMPTE</div><h2 id="social-title">Tes amis.</h2><div id="social-content"></div></dialog>
+ <script type="module" src="/app.mjs"></script>
+</body></html>
