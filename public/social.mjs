@@ -35,7 +35,8 @@ export function createSocial({getAccount,getRoom,getCredentials,onRequireAccount
  function badges(){
   const count=(data?.incoming.length||0)+(data?.invitations.length||0);
   document.querySelectorAll('[data-social-open]').forEach(button=>{
-   const label=button.dataset.socialLabel||'Amis';button.textContent=label;
+   const label=button.dataset.socialLabel||'Amis',slot=button.querySelector('.social-label');
+   button.querySelector('.social-badge')?.remove();if(slot)slot.textContent=label;else button.textContent=label;
    if(count){const badge=document.createElement('span');badge.className='social-badge';badge.textContent=count;button.append(badge);}
    button.setAttribute('aria-label',count?`${label}, ${count} notification${count>1?'s':''}`:label);
   });

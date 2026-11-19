@@ -1,5 +1,6 @@
-const CACHE='le-purple-v18';
-const SHELL=['/','/style.css','/app.mjs','/game.mjs','/cards.mjs','/ui.mjs','/google-signin.mjs','/purple-reveal.mjs','/social.mjs','/favicon.svg','/icon-192.png','/icon-512.png','/manifest.webmanifest','/confidentialite.html'];
+const CACHE='le-purple-v20';
+const SHELL=['/','/style.css','/app.mjs','/game.mjs','/cards.mjs','/ui.mjs','/sound.mjs','/fx.mjs','/records.mjs','/google-signin.mjs','/purple-reveal.mjs','/social.mjs','/favicon.svg','/icon-192.png','/icon-512.png','/manifest.webmanifest','/confidentialite.html','/fonts/bagel-fat-one-latin.woff2','/fonts/rubik-latin.woff2'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>(k.startsWith('le-peuple-')||k.startsWith('le-purple-'))&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+// Network first so updates land straight away; the cache keeps the one-phone game playable offline.
 self.addEventListener('fetch',event=>{const url=new URL(event.request.url);if(event.request.method!=='GET'||url.origin!==self.location.origin||url.pathname.startsWith('/api/'))return;event.respondWith(fetch(event.request).then(response=>{if(response.ok){const copy=response.clone();event.waitUntil(caches.open(CACHE).then(cache=>cache.put(event.request.mode==='navigate'?'/':event.request,copy)));}return response;}).catch(async()=>{const cached=await caches.match(event.request.mode==='navigate'?'/':event.request);return cached||new Response('Connexion nécessaire pour ouvrir cette ressource.',{status:503});}));});
