@@ -264,7 +264,8 @@ async function start(e){
  const draft=$('#penalty-draft').value.trim();
  const selected=[...penalties,...(draft&&penalties.length<8&&!penalties.includes(draft)?[draft]:[])];
  const actions=penaltyMode==='random'?[...CHALLENGE_CATALOG,...(includeAlcohol?[ALCOHOL_CHALLENGE]:[])]:selected;
- const prefs={players:names,penalties:selected,penaltyMode,includeAlcohol};
+ const typed=mode==='local'?[...document.querySelectorAll('input[name=player]')].map(x=>x.value.trim()):names;
+ const prefs={players:typed,penalties:selected,penaltyMode,includeAlcohol};
  try{
   if(penaltyMode==='custom'&&!actions.length&&!(mode==='online'&&onlineAction==='join')){$('#penalty-setup').open=true;throw Error('Ajoute au moins un défi, ou passe en mode Surprise.');}
   if(mode==='local'){
