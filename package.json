@@ -1,0 +1,12 @@
+{
+  "name": "le-purple",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Rouge, noir ou Purple : le jeu de cartes entre amis.",
+  "type": "module",
+  "engines": {"node": ">=20"},
+  "scripts": {
+    "start": "node server/server.mjs",
+    "test": "node --test"
+  }
+}

@@ -25,12 +25,21 @@ export function cardInfo(id){
 }
 export function cleanName(value){if(typeof value!=='string')throw new GameError('Entre un prénom.');const name=value.trim();if(!name||name.length>24)throw new GameError('Le prénom doit contenir de 1 à 24 caractères.');return name;}
 export function cleanPenalties(values){if(!Array.isArray(values)||values.length<1||values.length>24||values.some(v=>typeof v!=='string'||!v.trim()||v.trim().length>120))throw new GameError('Choisissez de 1 à 24 défis de 120 caractères maximum.');return values.map(v=>v.trim());}
+export const emptyStats=()=>({draws:0,hits:0,purples:0,purpleHits:0,cleanTurns:0});
+export function newPlayer(name,id=crypto.randomUUID()){return {id,name:cleanName(name),score:0,penalties:0,turns:0,stats:emptyStats()};}
+// Every drawn card is shown face up, so the colours left in the deck are public knowledge.
+export function colorsLeft(game){
+ if(game?.colorsLeft)return game.colorsLeft;
+ if(game?.phase==='lobby')return {red:26,black:26};
+ if(!Array.isArray(game?.deck))return null;
+ return game.deck.reduce((n,id)=>(id<26?n.red++:n.black++,n),{red:0,black:0});
+}
 export function createGame(names,penalties,lobby=false,penaltyMode='custom'){
  if(!Array.isArray(names)||names.length<(lobby?1:2)||names.length>12)throw new GameError('La table accueille de 2 à 12 joueurs.');
  if(!['custom','random'].includes(penaltyMode))throw new GameError('Mode de défis inconnu.');
- return {format:1,phase:lobby?'lobby':'playing',players:names.map(name=>({id:crypto.randomUUID(),name:cleanName(name),score:0,penalties:0,turns:0})),penalties:cleanPenalties(penalties),penaltyMode,challengeBag:[],lastChallenge:null,current:0,streak:0,completedTurns:0,deck:lobby?[]:makeDeck(),last:null,pending:[],turnPenalties:[],history:[],endReason:null};
+ return {format:1,phase:lobby?'lobby':'playing',players:names.map(name=>newPlayer(name)),penalties:cleanPenalties(penalties),penaltyMode,challengeBag:[],lastChallenge:null,current:0,streak:0,completedTurns:0,deck:lobby?[]:makeDeck(),last:null,pending:[],turnPenalties:[],history:[],endReason:null};
 }
-export function publicGame(game){const {deck,challengeBag,lastChallenge,...visible}=game;return structuredClone({...visible,cardsLeft:game.phase==='lobby'?52:deck.length});}
+export function publicGame(game){const {deck,challengeBag,lastChallenge,...visible}=game;return structuredClone({...visible,cardsLeft:game.phase==='lobby'?52:deck.length,colorsLeft:colorsLeft(game)});}
 function nextRandomChallenge(game){
  if(!game.challengeBag?.length){
   game.challengeBag=shuffle(game.penalties);
@@ -73,8 +82,10 @@ export function applyAction(original,action){
  if(g.deck.length<count)throw new GameError(count===2?'Il reste une seule carte. Choisis rouge ou noir.':'Le paquet est terminé.',409);
  for(let i=0;i<count;i++)cards.push(cardInfo(g.deck.pop()));
  const correct=count===2?cards[0].color!==cards[1].color:cards[0].color===action.choice;
- const player=g.players[g.current];
- if(correct){g.streak+=count;player.score=(player.score||0)+count;if(g.streak>=3){g.phase='passed';g.completedTurns++;player.turns++;}}
+ const player=g.players[g.current],stats=player.stats??=emptyStats();
+ stats.draws++;if(count===2)stats.purples++;
+ if(correct){stats.hits++;if(count===2)stats.purpleHits++;}
+ if(correct){g.streak+=count;player.score=(player.score||0)+count;if(g.streak>=3){g.phase='passed';g.completedTurns++;player.turns++;if(!g.turnPenalties.length)stats.cleanTurns++;}}
  else{g.streak=0;g.phase='penalty';player.penalties+=count;if(g.penaltyMode==='random')g.pending=Array.from({length:count},()=>nextRandomChallenge(g));else{let pool=shuffle(g.penalties);g.pending=Array.from({length:count},()=>{if(!pool.length)pool=shuffle(g.penalties);return pool.pop();});}g.turnPenalties.push(...g.pending);}
  g.last={id:crypto.randomUUID(),playerId:player.id,name:player.name,choice:action.choice,cards,correct,points:correct?count:0,penalties:correct?0:count,streak:g.streak};
  g.history=[g.last,...g.history].slice(0,12);
